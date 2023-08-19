@@ -142,11 +142,16 @@ components:
           enum: 
           - GN.BIRTH
           - GN.PASSPORT
-        lineItems:
-          type: array
-          description: Override estimate details line items 
+        userInfo:
+          type: object
+          description: user/application details. 
           items:
-            $ref: '#/components/schemas/LineItems'
+            $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/User'
+        address:
+          type: object
+          description: Address of the user/record. 
+          items:
+            $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/Address'
         documents:
           type: array
           description: Any attachments of the Record. 
