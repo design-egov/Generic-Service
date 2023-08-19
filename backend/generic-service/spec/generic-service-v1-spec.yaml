@@ -51,7 +51,7 @@ paths:
               schema:
                 $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes'
   
-  /generic-service/v1/_search1:
+  /generic-service/v1/_search:
     post:
       tags:
       - Record
@@ -88,16 +88,18 @@ components:
           readOnly: true
           minLength: 1
           maxLength: 64
-        contractNumber:
+        applicationNumber:
           type: string
-          description:  Formatted Record number
-          example: CON/2023-24/001
+          description:  Formatted Record Application number
+          example: GN-APP/2023/07/14/001
           readOnly: true
           minLength: 1
           maxLength: 64
-        supplementaryNumber:
+        recordNumber:
           type: string
-          description: Formatted revision number. Empty in the case of an original contract. 
+          description:  Formatted Record number gets generated after workflow is completed
+          example: GN-RN/BIRTH/2023-24/001
+          readOnly: true
           minLength: 1
           maxLength: 64
         tenantId:
@@ -108,52 +110,38 @@ components:
           maxLength: 64
         status:
           type: string
-          description: Flag to soft delete 
+          description: Status of the Record 
           enum:
             - ACTIVE
             - INACTIVE
-            - ARCHIVED
-        wfStatus:
+            - INWORKFLOW
+        workflowStatus:
           type: string
-          description: The status of the contract derived from Workflow
+          description: The status of the record derived from Workflow
           minLength: 2
           maxLength: 64
-        executingAuthority:
+        referenceService:
           type: string
-          description: The executing authority of the given contract
-          enum: 
-          - DEPARTMENT
-          - CONTRACTOR
-        contractType:
+          description: If the record wants to get created on top of any existing service then it has to be mentioned
+        referenceId:
+          type: string
+          description: If the record wants to get created on top of any existing service then it has to be mentioned
+          format: uuid
+          example: 32e33343-7b4c-4353-9abf-4de8f5bcd764
+          minLength: 1
+          maxLength: 64
+        recordType:
           type: string
           description: Type of the Record. This will decide the other attributes of the Record and how it will be processed down the line. 
           enum: 
-          - WORK_ORDER
-          - PURCHASE_ORDER
-        totalContractedamount:
-          type: number
-          description: Applicable if contract amount is diffrent than estimate amount 
-        securityDeposit:
-          type: number
-          description: Capture the security deposit amount
-        agreementDate:
-          type: number
-          format: timestamp
-          description: The date of the agreement in epoch time. Default to today's date. Cannot be a future date. 
-        defectLiabilityPeriod:
-          type: number
-          description: The date in epoch until which the contractor is held accountable for any issues
-        orgId:
+          - BIRTH
+          - PASSPORT
+        businessService:
           type: string
-          description: Org ID of the contractor who is a party to the contract (from organisation service). 
-          minLength: 2
-          maxLength: 64
-        startDate:
-          type: number
-          description: Work start date in epoch time
-        endDate:
-          type: number
-          description: Work completion date in epoch time
+          description: Workflow will be performed according to it. 
+          enum: 
+          - GN.BIRTH
+          - GN.PASSPORT
         lineItems:
           type: array
           description: Override estimate details line items 
