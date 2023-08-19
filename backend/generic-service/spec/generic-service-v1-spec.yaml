@@ -159,66 +159,19 @@ components:
             $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/Document'
         auditDetails:
           $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/AuditDetails'
+        recordDetails:
+          type: object
+          description: Record specific details will be stored here as a  key-value pair.
         additionalDetails:
           type: object
           description: Any additional key-value pair to be stored with the Record. 
-      required: [tenantId, executingAuthority, type, vendorId]
+      required: [tenantId, businessService , recordType ]
 
-    
-    LineItems:
-      type: object
-      description: Overide the negotiated amounts from line items of the estimate 
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier line item details for contract
-          readOnly: true
-          minLength: 1
-          maxLength: 64
-        estimateId:
-          type: string
-          description: Unique estimate uuid from estimate service
-          minLength: 1
-          maxLength: 64
-        estimateLineItemId:
-          type: string
-          description: Estimate detail id from estimate service
-          minLength: 1
-          maxLength: 64
-        tenantId:
-          type: string
-          description: Tenant Identifier
-          example: pb.amritsar
-          minLength: 2
-          maxLength: 64
-        unitRate:
-          type: number
-          description: Unit rate of non-sor item
-        noOfunit:
-          type: number
-          description: Total number of units for sor and non-sor items
-        amountBreakups:
-          type: array
-          items:
-            $ref: '#/components/schemas/AmountBreakup'
-        status:
-          type: string
-          description: Flag to soft delete 
-          enum:
-            - ACTIVE
-            - INACTIVE
-        auditDetails:
-          $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/AuditDetails'
-        additionalDetails:
-          type: object
-          description: Any additional key-value pair to be stored with the contract. 
-      required: [estimateId,tenantId]
       
     
     RecordCriteria:
       type: object
-      description: The object will contain all the search parameters for contract service. 
+      description: The object will contain all the search parameters for generic service to search any record. 
       properties:
         tenantId:
           type: string
@@ -228,52 +181,43 @@ components:
           maxLength: 64
         ids:
           type: array
-          description: Search by contract ids 
+          description: Search by record ids 
           format: uuid
           items:
             type: string
-        estimateIds:
-          description: Search by estimate ids
+        referenceIds:
+          description: Search by record reference ids
           type: array
           format: uuid
           items:
             type: string
-        estimateLineItemIds:
-          type: array
-          description: Search by estimate line items ids
-          format: uuid
-          items:
-            type: string
-        
-      required: [tenantId]
-    
-    AmountBreakup:
-      type: object
-      properties:
-        id:
+        recordType:
           type: string
-          description: Unique identifier of the amount breakups
-          format: uuid
-          example: '251c51eb-e970-4e01-a99a-70136c47a934'
-          readOnly: true
-        estimateAmountBreakupId:
+          description: Type of record
+          example: BIRTH
+        businessService:
           type: string
-          description: Amount breakup id from estimate
-          format: uuid
-          example: '251c51eb-e970-4e01-a99a-70136c47a934'
+          description: Business service of the record
+          example: GN.BIRTH
+        applicationNumber:
+          type: string
+          description: Formatted Record Application number
+          example: GN-APP/2023/07/14/001
+        recordNumber:
+          type: string
+          description: Formatted Record number
+          example: GN-RN/BIRTH/2023-24/001
         status:
           type: string
-          description: Flag to soft delete 
-          enum:
-            - ACTIVE
-            - INACTIVE
-        amount:
-          type: number
-          description: Override the amount of estimate line item
-        additionalDetails:
-          type: object
-          description: 'Any additional information that needs to be attached to the estimate. For attachments, fileStoreIds will also be stored here. '
-      required: [ estimateAmountBreakupId, amount ]
+          description: status of record
+          example: ACTIVE
+        workflowStatus:
+          type: string
+          description: workflow status of record
+          example: ACTIVE
+
+      required: [tenantId]
+    
     
     RecordCreateRequest:
       type: object
