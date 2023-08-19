@@ -1,0 +1,242 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Generic Service
+  description: Generic service can be used in any context
+
+paths: 
+  /generic-service/v1/_create:
+    post:
+      tags:
+      - Record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordCreateRequest'
+      responses:
+        '202':
+          description: Accepted create Record request.
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RecordResponse'
+        '400':
+          description: Invalid input.
+          content:
+            '*/*':
+              schema:
+                $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes'
+  
+  /generic-service/v1/_update:
+    post:
+      tags:
+      - Record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordCreateRequest'
+      responses:
+        '202':
+          description: Accepted create Record request.
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RecordResponse'
+        '400':
+          description: Invalid input.
+          content:
+            '*/*':
+              schema:
+                $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes'
+  
+  /generic-service/v1/_search:
+    post:
+      tags:
+      - Record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordCriteria'
+      responses:
+        '200':
+          description: Successful response sorted by reverse chrnological order of creation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RecordResponse'
+        '400':
+          description: Bad Request.
+          content:
+            '*/*':
+              schema:
+                $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes'
+
+components:
+  schemas:
+    Record:
+      type: object
+      description: Record details 
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the Record
+          example: 32e33343-7b4c-4353-9abf-4de8f5bcd764
+          readOnly: true
+          minLength: 1
+          maxLength: 64
+        applicationNumber:
+          type: string
+          description:  Formatted Record Application number
+          example: GN-APP/2023/07/14/001
+          readOnly: true
+          minLength: 1
+          maxLength: 64
+        recordNumber:
+          type: string
+          description:  Formatted Record number gets generated after workflow is completed
+          example: GN-RN/BIRTH/2023-24/001
+          readOnly: true
+          minLength: 1
+          maxLength: 64
+        tenantId:
+          type: string
+          description: Tenant Identifier
+          example: pb.amritsar
+          minLength: 2
+          maxLength: 64
+        status:
+          type: string
+          description: Status of the Record 
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - INWORKFLOW
+        workflowStatus:
+          type: string
+          description: The status of the record derived from Workflow
+          minLength: 2
+          maxLength: 64
+        referenceService:
+          type: string
+          description: If the record wants to get created on top of any existing service then it has to be mentioned
+        referenceId:
+          type: string
+          description: If the record wants to get created on top of any existing service then it has to be mentioned
+          format: uuid
+          example: 32e33343-7b4c-4353-9abf-4de8f5bcd764
+          minLength: 1
+          maxLength: 64
+        recordType:
+          type: string
+          description: Type of the Record. This will decide the other attributes of the Record and how it will be processed down the line. 
+          enum: 
+          - BIRTH
+          - PASSPORT
+        businessService:
+          type: string
+          description: Workflow will be performed according to it. 
+          enum: 
+          - GN.BIRTH
+          - GN.PASSPORT
+        userInfo:
+          type: object
+          description: user/application details. 
+          items:
+            $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/User'
+        address:
+          type: object
+          description: Address of the user/record. 
+          items:
+            $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/Address'
+        documents:
+          type: array
+          description: Any attachments of the Record. 
+          items:
+            $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/Document'
+        auditDetails:
+          $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/AuditDetails'
+        recordDetails:
+          type: object
+          description: Record specific details will be stored here as a  key-value pair.
+        additionalDetails:
+          type: object
+          description: Any additional key-value pair to be stored with the Record. 
+      required: [tenantId, businessService , recordType ]
+
+      
+    
+    RecordCriteria:
+      type: object
+      description: The object will contain all the search parameters for generic service to search any record. 
+      properties:
+        tenantId:
+          type: string
+          description: Tenant Identifier
+          example: pb.amritsar
+          minLength: 2
+          maxLength: 64
+        ids:
+          type: array
+          description: Search by record ids 
+          format: uuid
+          items:
+            type: string
+        referenceIds:
+          description: Search by record reference ids
+          type: array
+          format: uuid
+          items:
+            type: string
+        recordType:
+          type: string
+          description: Type of record
+          example: BIRTH
+        businessService:
+          type: string
+          description: Business service of the record
+          example: GN.BIRTH
+        applicationNumber:
+          type: string
+          description: Formatted Record Application number
+          example: GN-APP/2023/07/14/001
+        recordNumber:
+          type: string
+          description: Formatted Record number
+          example: GN-RN/BIRTH/2023-24/001
+        status:
+          type: string
+          description: status of record
+          example: ACTIVE
+        workflowStatus:
+          type: string
+          description: workflow status of record
+          example: ACTIVE
+
+      required: [tenantId]
+    
+    
+    RecordCreateRequest:
+      type: object
+      properties:
+        requestInfo:
+          $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/definitions/RequestInfo'
+        Record:
+          $ref: '#/components/schemas/Record'
+        workflow:
+          $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/Workflow'
+    
+    RecordResponse:
+      type: object
+      properties:
+        responseInfo:
+          $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/definitions/ResponseInfo'
+        Records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Record'
+        pagination:
+          $ref: 'https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/Pagination'
